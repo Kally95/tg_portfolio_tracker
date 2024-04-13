@@ -5,7 +5,7 @@ from KucoinDemo import TradeAnalyser, analyse_trades
 from utils import *
 
 chat_id_to_notify = None
-threshold = 30
+threshold = float('inf')
 notification_sent = {'win': False, 'loss': False}
 losing_trades = []
 winning_trades = []
@@ -21,11 +21,11 @@ async def check_portfolio_performance(context: CallbackContext):
     winners = await track_winning_trades(portfolio_data_list)
     for data in portfolio_data_list:
         if data['win_loss'] > threshold and not notification_sent['win']:
-            await context.bot.send_message(chat_id=chat_id_to_notify, text=f"Notification: Your portfolio win percentage has exceeded {threshold}% 🚀🚀🚀. \n \n {winners}")
+            await context.bot.send_message(chat_id=chat_id_to_notify, text=f"Notification: Your portfolio win percentage has exceeded {threshold}% 🚀🚀🚀. \n \n{winners}")
             notification_sent['win'] = True
             notification_sent['loss'] = False
         if data['win_loss'] < -threshold and not notification_sent['loss']:
-            await context.bot.send_message(chat_id=chat_id_to_notify, text=f"Notification: Your portfolio loss percentage has exceeded -{threshold}% 📉📉📉.\n \n {losers}")
+            await context.bot.send_message(chat_id=chat_id_to_notify, text=f"Notification: Your portfolio loss percentage has exceeded -{threshold}% 📉📉📉.\n \n{losers}")
             notification_sent['loss'] = True  
             notification_sent['win'] = False 
 
@@ -63,9 +63,8 @@ async def portfolio_update(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if "portfolio" in update.message.text.lower():
         trade_analyser = TradeAnalyser(keys.api_key, keys.api_secret, keys.api_passphrase)
         portfolio_data_list = analyse_trades(trade_analyser)
-        formatted_messages  = format_trade_data(portfolio_data_list)
-        formatted_data = "\n".join(formatted_messages)
-        await context.bot.send_message(chat_id=update.effective_chat.id, text=formatted_data)
+        formatted_message  = format_trade_data(portfolio_data_list)
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=formatted_message)
     else:
         await context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, I'm not quite sure what is you want. Please refer to /help or type in 'portfolio' for a report!")
 

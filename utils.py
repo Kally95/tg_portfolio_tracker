@@ -10,8 +10,7 @@ def format_trade_data(portfolio_data_list):
             "**********************\n"
         )
         messages.append(message)
-    return messages
-
+    return "\n".join(messages)
 
 async def format_losing_trade_data(losing_trades):
     losing = "Losers:"
