@@ -14,7 +14,10 @@ async def check_portfolio_performance(context: CallbackContext):
     global notification_sent
     trade_analyser = TradeAnalyser(keys.api_key, keys.api_secret, keys.api_passphrase)
     portfolio_data_list = analyse_trades(trade_analyser)
-    losers =  await format_losing_trade_data(portfolio_data_list)
+
+    losing_trades = await track_losing_trades(portfolio_data_list)
+    losers = await format_losing_trade_data(losing_trades)
+
     winners = await track_winning_trades(portfolio_data_list)
     for data in portfolio_data_list:
         if data['win_loss'] > threshold and not notification_sent['win']:
@@ -68,9 +71,11 @@ async def portfolio_update(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def track_losing_trades(portfolio_data_list):
     global losing_trades
+    losing_trades = []
     for currency in portfolio_data_list:
         if currency['win_loss'] < -threshold:
-            losing_trades.append(currency['symbol'])
+            losing_trades.append(currency)
+    return losing_trades
 
 async def track_winning_trades(portfolio_data_list):
     global winning_trades
