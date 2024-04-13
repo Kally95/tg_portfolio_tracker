@@ -63,7 +63,7 @@ async def portfolio_update(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if "portfolio" in update.message.text.lower():
         trade_analyser = TradeAnalyser(keys.api_key, keys.api_secret, keys.api_passphrase)
         portfolio_data_list = analyse_trades(trade_analyser)
-        formatted_messages  = utils.format_trade_data(portfolio_data_list)
+        formatted_messages  = format_trade_data(portfolio_data_list)
         formatted_data = "\n".join(formatted_messages)
         await context.bot.send_message(chat_id=update.effective_chat.id, text=formatted_data)
     else:
